@@ -68,8 +68,10 @@ public abstract class MeasurementStep implements CircuitStep {
 
     @Override
     public void serialize(QasmBuilder script) {
+        //TODO: add support for openqasm 2.0
+        //"measure q[" + details.qIndex() + "] -> c[" + details.cIndex() + "];"
         Details details = details();
-        script.addStep("measure q[" + details.qIndex() + "] -> c[" + details.cIndex() + "];");
+        script.addStep("c[" + details.cIndex() + "] = measure q[" + details.qIndex() + "];");
     }
 
     @Override

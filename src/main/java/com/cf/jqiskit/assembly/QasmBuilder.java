@@ -14,19 +14,19 @@ public final class QasmBuilder {
     }
 
     public void addDefinition(String definition) {
-        definitionBuilder.append(definition).append("\n");
+        definitionBuilder.append(definition).append(" ");
     }
 
     public void addStep(String step) {
-        stepBuilder.append(step).append("\n");
+        stepBuilder.append(step).append(" ");
     }
 
     @Override
     public String toString() {
-        return "OPENQASM " + version + ";\n" +
-                "include \"qelib1.inc\";\n" +
-                "qreg q[" + qubits + "];\n" +
-                "creg c[" + qubits + "];\n" +
+        return "OPENQASM " + version + "; " +
+                "include \"qelib1.inc\"; " +
+                "qreg q[" + qubits + "]; " +
+                "creg c[" + qubits + "]; " +
                 definitionBuilder +
                 stepBuilder;
     }
