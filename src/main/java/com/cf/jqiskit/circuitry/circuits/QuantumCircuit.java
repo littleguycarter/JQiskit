@@ -1,130 +1,90 @@
 package com.cf.jqiskit.circuitry.circuits;
 
-import com.cf.jqiskit.assembly.QasmBuilder;
-import com.cf.jqiskit.circuitry.CircuitStep;
-import com.cf.jqiskit.circuitry.ClassicalRegistry;
+import com.cf.jqiskit.assembly.Qasm;
+import com.cf.jqiskit.assembly.QasmWriter;
 import com.cf.jqiskit.circuitry.QuantumGate;
-import com.cf.jqiskit.circuitry.steps.GateStep;
-import com.cf.jqiskit.circuitry.steps.MeasurementStep;
-import com.cf.jqiskit.util.MathUtil;
-import com.cf.jqiskit.util.QuantumUtil;
-import com.cf.jqiskit.util.matrix.Matrix;
+import com.cf.jqiskit.circuitry.SerializableGate;
+import com.cf.jqiskit.circuitry.gates.Identity;
+import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 
 public class QuantumCircuit {
+    public static final String QUANTUM_REGISTRY = "q";
+    public static final String CLASSICAL_REGISTRY = "c";
+
     private final int qubits;
-    private final CircuitStep[] steps;
-    private final ClassicalRegistry classicalRegistry;
+    private final Matrix instruction;
     private final String qasm;
 
-    QuantumCircuit(int qubits, CircuitStep[] steps, ClassicalRegistry classicalRegistry, String qasm) {
+    private QuantumCircuit(int qubits, Matrix instruction, String qasm) {
         this.qubits = qubits;
-        this.steps = steps;
-        this.classicalRegistry = classicalRegistry;
+        this.instruction = instruction;
         this.qasm = qasm;
-    }
-
-    public Matrix run(Matrix initialState) {
-        if (initialState.rows() != MathUtil.powBase2(qubits)) {
-            throw new RuntimeException("Initial state must have 2^qubits rows.");
-        }
-
-        Matrix netState = initialState;
-
-        for (CircuitStep step : steps) {
-            netState = step.apply(netState);
-        }
-
-        return netState;
-    }
-
-    public Matrix run() {
-        return run(QuantumUtil.buildZeroState(qubits));
-    }
-
-    public int qubits() {
-        return qubits;
-    }
-
-    public ClassicalRegistry classicalRegistry() {
-        return classicalRegistry;
     }
 
     public String qasm() {
         return qasm;
     }
 
-    public static final class Builder {
+    public Matrix instruction() {
+        return instruction;
+    }
+
+    public int qubits() {
+        return qubits;
+    }
+
+    public static final class Compiler {
         private final int qubits;
-        private final ClassicalRegistry registry;
-        private final CircuitStep[] stepsBuilder;
-        private final QasmBuilder qasmBuilder;
-        private int currentStep;
-        private boolean fixed;
+        private final QasmWriter writer;
 
-        public Builder(int qubits, int steps, float qasmVersion) {
+        private Matrix instruction;
+        private Matrix step;
+        private int currentQubit;
+
+        public Compiler(int qubits, float qasmVersion) {
             this.qubits = qubits;
-            this.registry = new ClassicalRegistry(qubits);
-            this.stepsBuilder = new CircuitStep[steps];
-            this.qasmBuilder = new QasmBuilder(qasmVersion, qubits);
-            this.currentStep = 0;
-            this.fixed = true;
+            this.writer = Qasm.VERSIONS.get(qasmVersion).instance()
+                    .newWriter()
+                    .initialize()
+                    .qreg(QUANTUM_REGISTRY, qubits)
+                    .creg(CLASSICAL_REGISTRY, qubits);
+
+            this.instruction = null;
+            resetStep();
         }
 
-        public Builder addStep(CircuitStep step) {
-            step.validateCompatibility(qubits);
+        private void resetStep() {
+            this.step = null;
+            this.currentQubit = 0;
+        }
 
-            if (!step.isFixed()) {
-                fixed = false;
+        public Compiler gate(QuantumGate gate) {
+            if (currentQubit + gate.qubits() > qubits) {
+                throw new IllegalStateException("Cannot append " + gate.getClass().getSimpleName() + " to QuantumCircuit: step exceeds " + qubits + " qubits!");
             }
 
-            stepsBuilder[currentStep] = step;
-            currentStep++;
-            return this;
-        }
+            step = step == null ? gate.matrix() : step.tensor(gate.matrix());
 
-        public Builder addResizableGateStep(QuantumGate... gates) {
-            int qubits = 0;
-
-            for (QuantumGate gate : gates) {
-                qubits += gate == null ? 1 : gate.acceptedQubits();
+            if (gate instanceof SerializableGate serializableGate) {
+                serializableGate.serialize(writer, currentQubit);
             }
 
-            QuantumGate[] officialGates = new QuantumGate[gates.length + (this.qubits - qubits)];
-            System.arraycopy(gates, 0, officialGates, 0, gates.length);
+            currentQubit += gate.qubits();
 
-            return addGateStep(officialGates);
-        }
-
-        public Builder addGateStep(QuantumGate... gates) {
-            return addStep(new GateStep(gates));
-        }
-
-        public Builder measureAll() {
-            this.fixed = false;
-
-            for (int i = 0; i < qubits; i++) {
-                MeasurementStep.Details details = new MeasurementStep.Details(registry, i, i);
-
-                stepsBuilder[currentStep] = new MeasurementStep() {
-                    @Override
-                    protected Details details() {
-                        return details;
-                    }
-                };
-
-                currentStep++;
+            if (currentQubit == qubits) {
+                this.instruction = instruction == null ? step : instruction.multiply(step);
+                resetStep();
             }
 
             return this;
         }
 
-        public QuantumCircuit build() {
-            for (CircuitStep step : stepsBuilder) {
-                step.serialize(qasmBuilder);
-            }
+        public Compiler empty() {
+            return gate(new Identity(2));
+        }
 
-            String qasm = qasmBuilder.toString();
-            return fixed ? new CachedRunQuantumCircuit(qubits, stepsBuilder, registry, qasm) : new QuantumCircuit(qubits, stepsBuilder, registry, qasm);
+        public QuantumCircuit compile() {
+            return new QuantumCircuit(qubits, instruction, writer.toString());
         }
     }
 }

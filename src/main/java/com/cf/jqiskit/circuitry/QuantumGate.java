@@ -1,11 +1,11 @@
 package com.cf.jqiskit.circuitry;
 
-import com.cf.jqiskit.assembly.QasmBuilder;
 import com.cf.jqiskit.circuitry.gates.Hadamard;
 import com.cf.jqiskit.circuitry.gates.XRotation;
 import com.cf.jqiskit.circuitry.gates.YRotation;
 import com.cf.jqiskit.circuitry.gates.ZRotation;
-import com.cf.jqiskit.util.matrix.Matrix;
+import com.cf.jqiskit.util.math.MathUtil;
+import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 
 public interface QuantumGate {
     QuantumGate H = new Hadamard();
@@ -15,7 +15,7 @@ public interface QuantumGate {
 
     Matrix matrix();
 
-    int acceptedQubits();
-
-    void toQasmCommand(QasmBuilder script, int targetRegistry);
+    default int qubits() {
+        return MathUtil.logBase2(matrix().rows());
+    }
 }

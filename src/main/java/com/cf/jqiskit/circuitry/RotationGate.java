@@ -1,23 +1,21 @@
 package com.cf.jqiskit.circuitry;
 
-import com.cf.jqiskit.assembly.QasmBuilder;
+import com.cf.jqiskit.assembly.QasmWriter;
+import com.cf.jqiskit.circuitry.circuits.QuantumCircuit;
 
-public abstract class RotationGate implements QuantumGate {
+public abstract class RotationGate implements SerializableGate {
+    public enum Axis { X, Y, Z }
+
     protected final int piDivisor;
 
     public RotationGate(int piDivisor) {
         this.piDivisor = piDivisor;
     }
 
-    public abstract String qasmIdentifier();
+    protected abstract Axis axis();
 
     @Override
-    public int acceptedQubits() {
-        return 1;
-    }
-
-    @Override
-    public void toQasmCommand(QasmBuilder script, int targetRegistry) {
-        script.addStep(qasmIdentifier() + "(pi/" + piDivisor + ")" + " q[" + targetRegistry + "];");
+    public void serialize(QasmWriter writer, int regIndex) {
+        writer.rotate(axis(), QuantumCircuit.QUANTUM_REGISTRY, regIndex, piDivisor);
     }
 }

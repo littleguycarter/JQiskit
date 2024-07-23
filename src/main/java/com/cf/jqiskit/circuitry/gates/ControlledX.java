@@ -1,22 +1,22 @@
 package com.cf.jqiskit.circuitry.gates;
 
-import com.cf.jqiskit.assembly.QasmBuilder;
-import com.cf.jqiskit.util.MathUtil;
-import com.cf.jqiskit.util.QuantumUtil;
-import com.cf.jqiskit.util.matrix.ComplexNumber;
-import com.cf.jqiskit.util.matrix.Matrix;
-import com.cf.jqiskit.circuitry.QuantumGate;
+import com.cf.jqiskit.assembly.QasmWriter;
+import com.cf.jqiskit.circuitry.SerializableGate;
+import com.cf.jqiskit.circuitry.circuits.QuantumCircuit;
+import com.cf.jqiskit.util.math.MathUtil;
+import com.cf.jqiskit.util.quantum.QuantumUtil;
+import com.cf.jqiskit.util.math.linear_algebra.ComplexNumber;
+import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 
-public class ControlledX implements QuantumGate {
+public class ControlledX implements SerializableGate {
     private final int targetDistFromControl;
-    private final int qubitRows;
     private final Matrix operation;
 
     public ControlledX(int targetDistFromControl) {
         this.targetDistFromControl = targetDistFromControl;
 
         int absDist = Math.abs(targetDistFromControl);
-        this.qubitRows = absDist + 1;
+        int qubitRows = absDist + 1;
         int size = MathUtil.powBase2(qubitRows);
 
         ComplexNumber[] data = new ComplexNumber[size * size];
@@ -44,12 +44,7 @@ public class ControlledX implements QuantumGate {
     }
 
     @Override
-    public int acceptedQubits() {
-        return qubitRows;
-    }
-
-    @Override
-    public void toQasmCommand(QasmBuilder script, int targetRegistry) {
-        script.addStep("cx q[" + (targetRegistry - Math.min(targetDistFromControl, 0)) + "], q[" + (targetRegistry + Math.max(targetDistFromControl, 0)) + "];");
+    public void serialize(QasmWriter writer, int regIndex) {
+        writer.cx(QuantumCircuit.QUANTUM_REGISTRY, regIndex - Math.min(targetDistFromControl, 0), QuantumCircuit.QUANTUM_REGISTRY, regIndex + Math.max(targetDistFromControl, 0));
     }
 }

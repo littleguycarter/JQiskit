@@ -1,15 +1,11 @@
 package com.cf.jqiskit;
 
-import com.cf.jqiskit.circuitry.circuits.CachedRunQuantumCircuit;
-import com.cf.jqiskit.circuitry.circuits.QuantumCircuit;
 import com.cf.jqiskit.exceptions.IBMException;
 import com.cf.jqiskit.ibm.IBMEndpoint;
 import com.cf.jqiskit.ibm.IBMHttpRequest;
 import com.cf.jqiskit.ibm.IBMRequestInfo;
 import com.cf.jqiskit.ibm.responses.IBMResponse;
 import com.cf.jqiskit.io.response.Response;
-import com.cf.jqiskit.circuitry.QuantumGate;
-import com.cf.jqiskit.circuitry.gates.ControlledX;
 import com.cf.jqiskit.gson_adapters.JsonAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -98,27 +94,23 @@ public final class JQiskit {
     }
 
     // TEMPORARY
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         QuantumGate X = QuantumGate.X;
         QuantumGate Y = QuantumGate.Y;
         QuantumGate Z = QuantumGate.Z;
         QuantumGate H = QuantumGate.H;
         ControlledX CX = new ControlledX(1);
+        Qasm.VERSIONS.get(3.0f).instance();
 
-        QuantumCircuit.Builder builder = new QuantumCircuit.Builder(4, 5, 2.0f);
-        QuantumCircuit circuit = builder
-                .addGateStep(H, null, null, null)
-                .addGateStep(CX, null, null)
-                .addGateStep(null, CX, null)
-                .addGateStep(null, null, CX)
-                .addGateStep(null, null, null, Z)
-                .build();
+        long start = System.currentTimeMillis();
+        QuantumCircuit circuit = new QuantumCircuit.Compiler(2, 3.0f)
+                .gate(H).empty()
+                .gate(CX)
+                .compile();
+        long end = System.currentTimeMillis();
 
-        CachedRunQuantumCircuit cached = (CachedRunQuantumCircuit) circuit;
-        System.out.println(cached.expectationValue());
+        System.out.println(end-start);
 
-        System.out.println(circuit);
-    }
-
-
+        System.out.println(circuit.instruction());
+    }*/
 }

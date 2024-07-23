@@ -1,9 +1,8 @@
 package com.cf.jqiskit.circuitry.gates;
 
 import com.cf.jqiskit.circuitry.RotationGate;
-import com.cf.jqiskit.util.matrix.ComplexNumber;
-import com.cf.jqiskit.util.matrix.Matrix;
-import com.cf.jqiskit.circuitry.QuantumGate;
+import com.cf.jqiskit.util.math.linear_algebra.ComplexNumber;
+import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 
 public class YRotation extends RotationGate {
     private final Matrix operation;
@@ -22,17 +21,12 @@ public class YRotation extends RotationGate {
     }
 
     @Override
+    public Axis axis() {
+        return Axis.Y;
+    }
+
+    @Override
     public Matrix matrix() {
         return operation;
-    }
-
-    @Override
-    public String qasmIdentifier() {
-        return "ry";
-    }
-
-    @Override
-    public int acceptedQubits() {
-        return 1;
     }
 }
