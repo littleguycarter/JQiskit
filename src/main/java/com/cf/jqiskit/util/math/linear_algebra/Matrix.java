@@ -5,14 +5,6 @@ public final class Matrix {
     private final byte columns;
     private final ComplexNumber[] data;
 
-    public static boolean isColumnVector(Matrix matrix) {
-        return matrix.rows() != 1 && matrix.columns() == 1;
-    }
-
-    public static boolean isSingleton(Matrix matrix) {
-        return matrix.columns() == 1 && matrix.rows() == 1;
-    }
-
     public static Matrix identity(byte size) {
         ComplexNumber[] data = new ComplexNumber[size * size];
 
@@ -176,6 +168,18 @@ public final class Matrix {
         return new Matrix((byte) (rows * other.rows), (byte) (columns * other.columns), newData);
     }
 
+    public boolean isSquare() {
+        return rows == columns;
+    }
+
+    public boolean isColumnVector() {
+        return rows != 1 && columns == 1;
+    }
+
+    public boolean isSingleton() {
+        return columns == 1 && rows == 1;
+    }
+
     public int rows() {
         return rows;
     }
@@ -222,11 +226,5 @@ public final class Matrix {
         }
 
         return true;
-    }
-
-    public Matrix cloneMatrix() {
-        ComplexNumber[] newData = new ComplexNumber[data.length];
-        System.arraycopy(data, 0, newData, 0, data.length);
-        return new Matrix(rows, columns, newData);
     }
 }

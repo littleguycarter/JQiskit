@@ -7,16 +7,13 @@ import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 public class ZRotation extends RotationGate {
     private final Matrix operation;
 
-    public ZRotation(int piDivisor) {
-        super(piDivisor);
+    public ZRotation(float piMultiplier) {
+        super(piMultiplier);
 
-        double angle = Math.PI / piDivisor;
-        double cos = Math.cos(angle / 2);
-        double sin = Math.sin(angle / 2);
-
+        double angle = Math.PI * piMultiplier;
         this.operation = new Matrix((byte) 2, (byte) 2, new ComplexNumber[] {
-            ComplexNumber.ofReal(cos), ComplexNumber.empty(),
-            ComplexNumber.empty(), ComplexNumber.ofImaginary(sin)
+                ComplexNumber.ofPolar(1, -angle/2), ComplexNumber.empty(),
+                ComplexNumber.empty(), ComplexNumber.ofPolar(1, angle/2)
         });
     }
 

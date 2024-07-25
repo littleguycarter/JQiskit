@@ -76,10 +76,10 @@ public final class Qasm3Writer extends QasmWriter {
     }
 
     @Override
-    public QasmWriter rotate(RotationGate.Axis axis, String qreg, int qubit, int piDivisor) {
+    public QasmWriter rotate(RotationGate.Axis axis, String qreg, int qubit, float piMultiplier) {
         appendSingleIndexCmd(
                 logicBuilder,
-                "r" + axis.toString().toLowerCase() + "(pi/" + piDivisor + ")",
+                "r" + axis.toString().toLowerCase() + "(pi*" + piMultiplier + ")",
                 qreg,
                 qubit
         );

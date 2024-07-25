@@ -7,10 +7,10 @@ import com.cf.jqiskit.util.math.linear_algebra.Matrix;
 public class XRotation extends RotationGate {
     private final Matrix operation;
 
-    public XRotation(int piDivisor) {
-        super(piDivisor);
+    public XRotation(int piMultiplier) {
+        super(piMultiplier);
 
-        double angle = Math.PI / piDivisor;
+        double angle = Math.PI * piMultiplier;
         double cos = Math.cos(angle / 2);
         double sin = Math.sin(angle / 2);
 

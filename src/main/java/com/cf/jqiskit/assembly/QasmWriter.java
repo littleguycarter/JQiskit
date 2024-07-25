@@ -25,7 +25,7 @@ public abstract class QasmWriter {
 
     public abstract QasmWriter z(String qreg, int qubit);
 
-    public abstract QasmWriter rotate(RotationGate.Axis axis, String qreg, int qubit, int piDivisor);
+    public abstract QasmWriter rotate(RotationGate.Axis axis, String qreg, int qubit, float piMultiplier);
 
     public abstract QasmWriter h(String qreg, int qubit);
 

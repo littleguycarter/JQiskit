@@ -1,8 +1,9 @@
 package com.cf.jqiskit.util.math.linear_algebra;
 
-public final class ComplexNumber implements Cloneable {
-    private static final double EPSILON = 1E-10;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
+public final class ComplexNumber implements Cloneable {
     private final double real;
     private final double imaginary;
 
@@ -32,7 +33,7 @@ public final class ComplexNumber implements Cloneable {
     }
 
     private double removeUncertainty(double value) {
-        return Math.abs(value) < EPSILON ? 0 : value;
+        return new BigDecimal(value).setScale(14, RoundingMode.HALF_UP).doubleValue();
     }
 
     public ComplexNumber add(ComplexNumber other) {

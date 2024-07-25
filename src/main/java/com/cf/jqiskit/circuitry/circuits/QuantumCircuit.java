@@ -33,6 +33,14 @@ public class QuantumCircuit {
         return qubits;
     }
 
+    public Matrix transform(Matrix state) {
+        if (state.rows() != instruction.rows()) {
+            throw new IllegalArgumentException("Provided state's dimensions are incompatible with the circuit's instruction matrix dimensions.");
+        }
+
+        return instruction.multiply(state);
+    }
+
     public static final class Compiler {
         private final int qubits;
         private final QasmWriter writer;
@@ -50,36 +58,46 @@ public class QuantumCircuit {
                     .creg(CLASSICAL_REGISTRY, qubits);
 
             this.instruction = null;
-            resetStep();
+            nextStep();
         }
 
-        private void resetStep() {
+        private void nextStep() {
             this.step = null;
             this.currentQubit = 0;
         }
 
         public Compiler gate(QuantumGate gate) {
-            if (currentQubit + gate.qubits() > qubits) {
-                throw new IllegalStateException("Cannot append " + gate.getClass().getSimpleName() + " to QuantumCircuit: step exceeds " + qubits + " qubits!");
+            int gateQubits = gate.qubits();
+
+            if (gateQubits > qubits) {
+                throw new IllegalArgumentException("Gate qubit requirement exceeds the size of the circuit!");
             }
 
-            step = step == null ? gate.matrix() : step.tensor(gate.matrix());
+            if (gateQubits != 1 && currentQubit + gateQubits > qubits) {
+                for (int i = currentQubit; i < qubits; i++) {
+                    step = step.tensor(QuantumGate.I.matrix());
+                }
+            } else {
+                step = step == null ? gate.matrix() : step.tensor(gate.matrix());
 
-            if (gate instanceof SerializableGate serializableGate) {
-                serializableGate.serialize(writer, currentQubit);
+                if (gate instanceof SerializableGate serializableGate) {
+                    serializableGate.serialize(writer, currentQubit);
+                }
+
+                currentQubit += gateQubits;
+
+                if (currentQubit != qubits) {
+                    return this;
+                }
             }
 
-            currentQubit += gate.qubits();
-
-            if (currentQubit == qubits) {
-                this.instruction = instruction == null ? step : instruction.multiply(step);
-                resetStep();
-            }
+            this.instruction = instruction == null ? step : step.multiply(instruction);
+            nextStep();
 
             return this;
         }
 
-        public Compiler empty() {
+        public Compiler skip() {
             return gate(new Identity(2));
         }
 
