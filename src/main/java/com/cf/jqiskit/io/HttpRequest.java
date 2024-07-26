@@ -11,16 +11,14 @@ public interface HttpRequest {
 
     void prepare(HttpURLConnection connection) throws IOException;
 
-    default void populate(Response... responses) throws IOException {
+    default void populate(Response response) throws IOException {
         HttpURLConnection connection = null;
 
         try {
             connection = (HttpURLConnection) URI.create(getRawURL()).toURL().openConnection();
             prepare(connection);
 
-            for (Response response : responses) {
-                response.use(connection);
-            }
+            response.use(connection);
         } finally {
             if (connection != null) {
                 connection.disconnect();
