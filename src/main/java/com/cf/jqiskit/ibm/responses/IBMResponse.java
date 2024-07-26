@@ -2,7 +2,7 @@ package com.cf.jqiskit.ibm.responses;
 
 
 import com.cf.jqiskit.JQiskit;
-import com.cf.jqiskit.ibm.IBMError;
+import com.cf.jqiskit.ibm.objects.IBMError;
 import com.cf.jqiskit.io.HttpUtil;
 import com.cf.jqiskit.io.response.types.JsonResponse;
 import com.google.common.collect.ImmutableSet;

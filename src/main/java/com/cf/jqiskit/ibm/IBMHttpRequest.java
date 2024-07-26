@@ -1,5 +1,6 @@
 package com.cf.jqiskit.ibm;
 
+import com.cf.jqiskit.ibm.endpoint.IBMEndpoint;
 import com.cf.jqiskit.io.HttpRequest;
 import com.google.gson.JsonObject;
 
@@ -22,7 +23,7 @@ public class IBMHttpRequest implements HttpRequest {
 
     @Override
     public String getRawURL() {
-        return info.endpoint().getRawURL();
+        return info.endpoint().rawUrlPath();
     }
 
     @Override

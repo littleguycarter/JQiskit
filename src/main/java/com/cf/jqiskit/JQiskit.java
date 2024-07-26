@@ -5,19 +5,26 @@ import com.cf.jqiskit.circuitry.QuantumGate;
 import com.cf.jqiskit.circuitry.circuits.QuantumCircuit;
 import com.cf.jqiskit.circuitry.gates.ControlledX;
 import com.cf.jqiskit.exceptions.IBMException;
-import com.cf.jqiskit.ibm.IBMEndpoint;
 import com.cf.jqiskit.ibm.IBMHttpRequest;
 import com.cf.jqiskit.ibm.IBMRequestInfo;
+import com.cf.jqiskit.ibm.endpoint.IBMEndpoint;
+import com.cf.jqiskit.ibm.endpoint.types.BackendStatusEndpoint;
+import com.cf.jqiskit.ibm.objects.BackendStatus;
+import com.cf.jqiskit.ibm.objects.IBMError;
+import com.cf.jqiskit.ibm.responses.IBMObjectResponse;
 import com.cf.jqiskit.ibm.responses.IBMResponse;
 import com.cf.jqiskit.io.response.Response;
 import com.cf.jqiskit.gson_adapters.JsonAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 public final class JQiskit {
     private static final String ADAPTER_PACKAGE = "com.cf.jqiskit.gson_adapters";
@@ -42,7 +49,7 @@ public final class JQiskit {
         GSON = builder.create();
     }
 
-    public static JQiskit from(String apiToken, int poolSize) {
+    public static JQiskit from(String apiToken) {
         IBMResponse response = new IBMResponse();
 
         try {
@@ -52,27 +59,28 @@ public final class JQiskit {
         }
 
         if (response.getStatus() == 200) {
-            System.out.println(response.getJsonResponse());
-            return new JQiskit(apiToken, poolSize);
+            return new JQiskit(apiToken);
         }
 
         throw new IBMException(response.getErrors());
     }
 
     private final String apiToken;
-    private final ScheduledExecutorService requestExecutor;
 
-    private JQiskit(String apiToken, int poolSize) {
+    private JQiskit(String apiToken) {
         this.apiToken = apiToken;
-        this.requestExecutor = Executors.newScheduledThreadPool(poolSize);
     }
 
-    public <T extends Response> CompletableFuture<T> request(IBMRequestInfo info, T response) {
+    public void request(IBMRequestInfo info, Response response) throws IOException {
+        new IBMHttpRequest(info, apiToken).populate(response);
+    }
+
+    public <T extends Response> CompletableFuture<T> request(IBMRequestInfo info, T response, ThreadPoolExecutor executor) {
         CompletableFuture<T> future = new CompletableFuture<>();
 
-        requestExecutor.submit(() -> {
+        executor.submit(() -> {
             try {
-                new IBMHttpRequest(info, apiToken).populate(response);
+                request(info, response);
                 future.complete(response);
             } catch (IOException e) {
                 future.completeExceptionally(e);
@@ -82,23 +90,12 @@ public final class JQiskit {
         return future;
     }
 
-    public <T extends Response> CompletableFuture<T> requestDelayed(IBMRequestInfo info, T response, long delay, TimeUnit units) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-
-        requestExecutor.schedule(() -> {
-            try {
-                new IBMHttpRequest(info, apiToken).populate(response);
-                future.complete(response);
-            } catch (IOException e) {
-                future.completeExceptionally(e);
-            }
-        }, delay, units);
-
-        return future;
-    }
-
     // TEMPORARY
-    public static void main(String[] args) {
+    /*public static void main(String[] args) throws IOException {
+        JQiskit instance = JQiskit.from("REDACTED");
+        Backend backend = Backend.from("ibm_brisbane", instance);
+        System.out.println(backend.status().status());
+
         QuantumGate X = QuantumGate.X;
         QuantumGate Y = QuantumGate.Y;
         QuantumGate Z = QuantumGate.Z;
@@ -115,5 +112,5 @@ public final class JQiskit {
         System.out.println(System.currentTimeMillis());
 
         System.out.println(circuit.instruction());
-    }
+    }*/
 }

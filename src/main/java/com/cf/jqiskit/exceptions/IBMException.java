@@ -1,6 +1,6 @@
 package com.cf.jqiskit.exceptions;
 
-import com.cf.jqiskit.ibm.IBMError;
+import com.cf.jqiskit.ibm.objects.IBMError;
 
 import java.util.Set;
 
