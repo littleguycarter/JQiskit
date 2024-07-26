@@ -3,8 +3,6 @@ package com.cf.jqiskit;
 import com.cf.jqiskit.assembly.Qasm;
 import com.cf.jqiskit.circuitry.QuantumGate;
 import com.cf.jqiskit.circuitry.circuits.QuantumCircuit;
-import com.cf.jqiskit.circuitry.computations.estimator.ClassicalEstimator;
-import com.cf.jqiskit.circuitry.computations.estimator.Estimator;
 import com.cf.jqiskit.circuitry.gates.ControlledX;
 import com.cf.jqiskit.exceptions.IBMException;
 import com.cf.jqiskit.ibm.IBMEndpoint;
@@ -13,9 +11,6 @@ import com.cf.jqiskit.ibm.IBMRequestInfo;
 import com.cf.jqiskit.ibm.responses.IBMResponse;
 import com.cf.jqiskit.io.response.Response;
 import com.cf.jqiskit.gson_adapters.JsonAdapter;
-import com.cf.jqiskit.util.math.linear_algebra.ComplexNumber;
-import com.cf.jqiskit.util.math.linear_algebra.Matrix;
-import com.cf.jqiskit.util.quantum.QuantumUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.reflections.Reflections;
@@ -103,7 +98,7 @@ public final class JQiskit {
     }
 
     // TEMPORARY
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         QuantumGate X = QuantumGate.X;
         QuantumGate Y = QuantumGate.Y;
         QuantumGate Z = QuantumGate.Z;
@@ -113,12 +108,12 @@ public final class JQiskit {
         Qasm.VERSIONS.get(3.0f).instance();
 
         System.out.println(System.currentTimeMillis());
-        QuantumCircuit circuit = new QuantumCircuit.Compiler(2, 3.0f)
+        QuantumCircuit circuit = new QuantumCircuit.Compiler(2, 2, 3.0f)
                 .gate(H)
                 .gate(CX)
                 .compile();
         System.out.println(System.currentTimeMillis());
 
         System.out.println(circuit.instruction());
-    }*/
+    }
 }
