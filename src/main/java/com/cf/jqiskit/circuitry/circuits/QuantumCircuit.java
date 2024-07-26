@@ -43,19 +43,21 @@ public class QuantumCircuit {
 
     public static final class Compiler {
         private final int qubits;
+        private final int bits;
         private final QasmWriter writer;
 
         private Matrix instruction;
         private Matrix step;
         private int currentQubit;
 
-        public Compiler(int qubits, float qasmVersion) {
+        public Compiler(int qubits, int bits, float qasmVersion) {
             this.qubits = qubits;
+            this.bits = bits;
             this.writer = Qasm.VERSIONS.get(qasmVersion).instance()
                     .newWriter()
                     .initialize()
                     .qreg(QUANTUM_REGISTRY, qubits)
-                    .creg(CLASSICAL_REGISTRY, qubits);
+                    .creg(CLASSICAL_REGISTRY, bits);
 
             this.instruction = null;
             nextStep();
@@ -99,6 +101,19 @@ public class QuantumCircuit {
 
         public Compiler skip() {
             return gate(new Identity(2));
+        }
+
+        public Compiler measure(int qreg, int creg) {
+            if (qreg < 0 || qreg >= qubits) {
+                throw new IndexOutOfBoundsException("Specified qreg must be between 0 and" + qubits);
+            }
+
+            if (creg < 0 || creg >= bits) {
+                throw new IndexOutOfBoundsException("Specified creg must be between 0 and" + bits);
+            }
+
+            writer.measure(QUANTUM_REGISTRY, qreg, CLASSICAL_REGISTRY, creg);
+            return this;
         }
 
         public QuantumCircuit compile() {
