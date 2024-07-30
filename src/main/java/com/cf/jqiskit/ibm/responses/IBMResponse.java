@@ -2,8 +2,9 @@ package com.cf.jqiskit.ibm.responses;
 
 
 import com.cf.jqiskit.JQiskit;
+import com.cf.jqiskit.exceptions.IBMException;
 import com.cf.jqiskit.ibm.objects.IBMError;
-import com.cf.jqiskit.io.HttpUtil;
+import com.cf.jqiskit.util.io.HttpUtil;
 import com.cf.jqiskit.io.response.types.JsonResponse;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
@@ -41,5 +42,11 @@ public class IBMResponse extends JsonResponse {
 
     public boolean isErrored() {
         return !errors.isEmpty();
+    }
+
+    public void throwErrors() {
+        if (isErrored()) {
+            throw new IBMException(errors);
+        }
     }
 }

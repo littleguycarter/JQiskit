@@ -5,7 +5,6 @@ import com.cf.jqiskit.ibm.IBMRequestInfo;
 import com.cf.jqiskit.ibm.endpoint.types.BackendStatusEndpoint;
 import com.cf.jqiskit.ibm.objects.BackendStatus;
 import com.cf.jqiskit.ibm.responses.IBMObjectResponse;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 
@@ -31,7 +30,7 @@ public final class Backend {
 
     public void update() throws IOException, IBMException {
         IBMRequestInfo info = new IBMRequestInfo(new BackendStatusEndpoint(id));
-        IBMObjectResponse<BackendStatus> response = new IBMObjectResponse<>(TypeToken.get(BackendStatus.class));
+        IBMObjectResponse<BackendStatus> response = new IBMObjectResponse<>(BackendStatus.class);
 
         instance.request(info, response);
 
@@ -41,6 +40,10 @@ public final class Backend {
 
         this.status = response.getResult();
         this.lastStatusUpdateMillis = System.currentTimeMillis();
+    }
+
+    public JQiskit runtimeInstance() {
+        return instance;
     }
 
     public String id() {

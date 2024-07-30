@@ -1,5 +1,6 @@
 package com.cf.jqiskit.io.response.types;
 
+import com.cf.jqiskit.io.RequestMethod;
 import com.cf.jqiskit.io.response.Response;
 
 import java.io.IOException;
@@ -15,5 +16,10 @@ public class StatusResponse implements Response {
 
     public int getStatus() {
         return status;
+    }
+
+    @Override
+    public RequestMethod requiredMethod() {
+        return null;
     }
 }

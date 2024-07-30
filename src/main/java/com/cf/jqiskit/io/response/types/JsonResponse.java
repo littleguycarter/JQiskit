@@ -1,6 +1,6 @@
 package com.cf.jqiskit.io.response.types;
 
-import com.cf.jqiskit.io.HttpUtil;
+import com.cf.jqiskit.util.io.HttpUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;

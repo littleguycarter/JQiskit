@@ -53,7 +53,7 @@ public class QuantumCircuit {
         public Compiler(int qubits, int bits, float qasmVersion) {
             this.qubits = qubits;
             this.bits = bits;
-            this.writer = Qasm.VERSIONS.get(qasmVersion).instance()
+            this.writer = Qasm.VERSIONS.get(qasmVersion).name()
                     .newWriter()
                     .initialize()
                     .qreg(QUANTUM_REGISTRY, qubits)

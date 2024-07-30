@@ -2,7 +2,7 @@ package com.cf.jqiskit.ibm;
 
 import com.cf.jqiskit.ibm.endpoint.IBMEndpoint;
 import com.cf.jqiskit.io.HttpRequest;
-import com.google.gson.JsonObject;
+import com.cf.jqiskit.io.RequestMethod;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,12 +27,16 @@ public class IBMHttpRequest implements HttpRequest {
     }
 
     @Override
+    public RequestMethod requestMethod() {
+        return info.endpoint().method();
+    }
+
+    @Override
     public void prepare(HttpURLConnection connection) throws IOException {
         connection.setRequestProperty("Authorization", "Bearer " + apiToken);
         connection.setRequestProperty("Accept", "application/json");
-        connection.setDoInput(true);
 
-        JsonObject payload = info.payload();
+        String payload = info.payload();
 
         if (payload == null) {
             return;
@@ -42,7 +46,7 @@ public class IBMHttpRequest implements HttpRequest {
         connection.setDoOutput(true);
 
         try (OutputStream output = connection.getOutputStream()) {
-            output.write(payload.toString().getBytes());
+            output.write(payload.getBytes());
         }
     }
 }

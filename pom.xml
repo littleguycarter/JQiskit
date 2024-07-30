@@ -26,10 +26,6 @@
       <url>https://mvnrepository.com/artifact/com.google.code.gson/gson</url>
       <id>gson</id>
     </repository>
-    <repository>
-      <url>https://mvnrepository.com/artifact/org.reflections/reflections</url>
-      <id>reflections</id>
-    </repository>
   </repositories>
 
   <dependencies>
@@ -42,11 +38,6 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.11.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>0.10.2</version>
     </dependency>
   </dependencies>
 </project>

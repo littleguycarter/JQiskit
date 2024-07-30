@@ -1,8 +1,6 @@
 package com.cf.jqiskit.gson_adapters;
 
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonSerializer;
+import com.cf.jqiskit.util.general.Typed;
 
-public interface JsonAdapter<T> extends JsonDeserializer<T> {
-    Class<T> getTargetClass();
+public interface JsonAdapter extends Typed {
 }

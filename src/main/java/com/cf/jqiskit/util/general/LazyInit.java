@@ -11,7 +11,7 @@ public final class LazyInit<T> {
         this.instance = null;
     }
 
-    public T instance() {
+    public T name() {
         if (instance == null) {
             try {
                 this.instance = clazz.getDeclaredConstructor().newInstance();

@@ -1,17 +1,17 @@
 package com.cf.jqiskit.ibm.responses;
 
 import com.cf.jqiskit.JQiskit;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 
 public class IBMObjectResponse<T> extends IBMResponse {
-    private final TypeToken<T> token;
+    private final Type type;
     private T object;
 
-    public IBMObjectResponse(TypeToken<T> token) {
-        this.token = token;
+    public IBMObjectResponse(Type type) {
+        this.type = type;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class IBMObjectResponse<T> extends IBMResponse {
             return;
         }
 
-        this.object = JQiskit.GSON.fromJson(getJsonResponse(), token);
+        this.object = JQiskit.GSON.fromJson(getJsonResponse(), type);
     }
 
     public T getResult() {

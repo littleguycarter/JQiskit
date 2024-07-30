@@ -1,5 +1,6 @@
-package com.cf.jqiskit.gson_adapters;
+package com.cf.jqiskit.gson_adapters.types;
 
+import com.cf.jqiskit.gson_adapters.JsonDeserializer;
 import com.cf.jqiskit.ibm.objects.BackendStatus;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
@@ -8,12 +9,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-public class IBMBackendStatusAdapter implements JsonAdapter<BackendStatus> {
-    @Override
-    public Class<BackendStatus> getTargetClass() {
-        return BackendStatus.class;
-    }
-
+public final class IBMBackendStatusDeserializer implements JsonDeserializer<BackendStatus> {
     @Override
     public BackendStatus deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject object = jsonElement.getAsJsonObject();
@@ -24,5 +20,10 @@ public class IBMBackendStatusAdapter implements JsonAdapter<BackendStatus> {
         String version = object.get("backend_version").getAsString();
 
         return new BackendStatus(state, status, message, queue, version);
+    }
+
+    @Override
+    public Type type() {
+        return BackendStatus.class;
     }
 }
