@@ -1,4 +1,4 @@
-package com.cf.jqiskit.ibm.endpoint.types;
+package com.cf.jqiskit.ibm.endpoint.types.backend;
 
 import com.cf.jqiskit.ibm.endpoint.IBMEndpoint;
 

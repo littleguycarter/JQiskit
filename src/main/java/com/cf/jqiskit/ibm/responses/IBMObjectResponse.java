@@ -1,6 +1,7 @@
 package com.cf.jqiskit.ibm.responses;
 
-import com.cf.jqiskit.JQiskit;
+import com.cf.jqiskit.JQiskitService;
+import com.cf.jqiskit.util.general.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -10,8 +11,12 @@ public class IBMObjectResponse<T> extends IBMResponse {
     private final Type type;
     private T object;
 
-    public IBMObjectResponse(Type type) {
-        this.type = type;
+    public IBMObjectResponse(TypeToken<T> token) {
+        this.type = token.type();
+    }
+
+    public IBMObjectResponse(Class<T> clazz) {
+        this.type = clazz;
     }
 
     @Override
@@ -22,7 +27,7 @@ public class IBMObjectResponse<T> extends IBMResponse {
             return;
         }
 
-        this.object = JQiskit.GSON.fromJson(getJsonResponse(), type);
+        this.object = JQiskitService.GSON.fromJson(getJsonResponse(), type);
     }
 
     public T getResult() {

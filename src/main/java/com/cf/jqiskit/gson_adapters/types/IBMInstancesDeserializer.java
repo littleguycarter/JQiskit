@@ -25,7 +25,7 @@ public final class IBMInstancesDeserializer implements JsonDeserializer<Map<Stri
     }
 
     @Override
-    public Type type() {
-        return new TypeToken<Map<String, Instance>>() {}.type();
+    public TypeToken<Map<String, Instance>> token() {
+        return new TypeToken<>() {};
     }
 }

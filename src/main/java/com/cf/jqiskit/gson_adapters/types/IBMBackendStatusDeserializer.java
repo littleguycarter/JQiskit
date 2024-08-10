@@ -2,6 +2,7 @@ package com.cf.jqiskit.gson_adapters.types;
 
 import com.cf.jqiskit.gson_adapters.JsonDeserializer;
 import com.cf.jqiskit.ibm.objects.BackendStatus;
+import com.cf.jqiskit.util.general.TypeToken;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,7 +24,7 @@ public final class IBMBackendStatusDeserializer implements JsonDeserializer<Back
     }
 
     @Override
-    public Type type() {
-        return BackendStatus.class;
+    public TypeToken<BackendStatus> token() {
+        return new TypeToken.Basic<>(BackendStatus.class);
     }
 }

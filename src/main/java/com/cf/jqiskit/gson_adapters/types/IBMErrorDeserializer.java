@@ -2,6 +2,7 @@ package com.cf.jqiskit.gson_adapters.types;
 
 import com.cf.jqiskit.gson_adapters.JsonDeserializer;
 import com.cf.jqiskit.ibm.objects.IBMError;
+import com.cf.jqiskit.util.general.TypeToken;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -42,7 +43,7 @@ public final class IBMErrorDeserializer implements JsonDeserializer<IBMError> {
     }
 
     @Override
-    public Type type() {
-        return IBMError.class;
+    public TypeToken<IBMError> token() {
+        return new TypeToken.Basic<>(IBMError.class);
     }
 }

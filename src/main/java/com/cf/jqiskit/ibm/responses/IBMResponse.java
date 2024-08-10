@@ -1,7 +1,7 @@
 package com.cf.jqiskit.ibm.responses;
 
 
-import com.cf.jqiskit.JQiskit;
+import com.cf.jqiskit.JQiskitService;
 import com.cf.jqiskit.exceptions.IBMException;
 import com.cf.jqiskit.ibm.objects.IBMError;
 import com.cf.jqiskit.util.io.HttpUtil;
@@ -30,7 +30,7 @@ public class IBMResponse extends JsonResponse {
         JsonArray errorArray = getJsonResponse().getAsJsonArray("errors");
 
         for (int i = 0; i < errorArray.size(); i++) {
-            builder.add(JQiskit.GSON.fromJson(errorArray.get(i), IBMError.class));
+            builder.add(JQiskitService.GSON.fromJson(errorArray.get(i), IBMError.class));
         }
 
         this.errors = builder.build();
