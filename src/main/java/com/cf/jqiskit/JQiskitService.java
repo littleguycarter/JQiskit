@@ -5,14 +5,19 @@ import com.cf.jqiskit.ibm.IBMHttpRequest;
 import com.cf.jqiskit.ibm.IBMRequestInfo;
 import com.cf.jqiskit.ibm.endpoint.IBMEndpoint;
 import com.cf.jqiskit.ibm.endpoint.types.backend.BackendStatusEndpoint;
+import com.cf.jqiskit.ibm.endpoint.types.jobs.JobEndpoint;
+import com.cf.jqiskit.ibm.endpoint.types.session.CloseSessionEndpoint;
 import com.cf.jqiskit.ibm.objects.BackendStatus;
 import com.cf.jqiskit.ibm.objects.Instance;
+import com.cf.jqiskit.ibm.objects.JobInfo;
 import com.cf.jqiskit.ibm.objects.Session;
 import com.cf.jqiskit.ibm.responses.IBMObjectResponse;
 import com.cf.jqiskit.ibm.responses.IBMResponse;
 import com.cf.jqiskit.io.response.Response;
+import com.cf.jqiskit.io.response.types.StatusResponse;
 import com.cf.jqiskit.util.general.Reflection;
 import com.cf.jqiskit.util.general.TypeToken;
+import com.cf.jqiskit.util.io.HttpUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -72,7 +77,18 @@ public final class JQiskitService {
         new IBMHttpRequest(info, apiToken).populate(response);
         response.throwErrors();
 
-        return new Session(apiToken, backend, instance, response.getJsonResponse().get("id").getAsString());
+        return new Session(this, backend, instance, response.getJsonResponse().get("id").getAsString());
+    }
+
+    public void closeSession(String sessionId) throws IOException {
+        IBMRequestInfo info = new IBMRequestInfo(new CloseSessionEndpoint(sessionId));
+        StatusResponse response = new StatusResponse();
+
+        new IBMHttpRequest(info, apiToken).populate(response);
+
+        if (!HttpUtil.isSuccessful(response.getStatus())) {
+            throw new IOException("Failed to close IBM Session: Error Code " + response.getStatus());
+        }
     }
 
     public BackendStatus fetchBackendStatus(String backend) throws IOException {
@@ -93,6 +109,16 @@ public final class JQiskitService {
         response.throwErrors();
 
         return GSON.fromJson(response.getJsonResponse().get("devices").getAsJsonArray(), String[].class);
+    }
+
+    public JobInfo.Status getJobStatus(String jobId) throws IOException {
+        IBMRequestInfo info = new IBMRequestInfo(new JobEndpoint(jobId));
+        IBMResponse response = new IBMResponse();
+
+        request(info, response);
+        response.throwErrors();
+
+        return JobInfo.Status.valueOf(response.getJsonResponse().get("status").getAsString().toUpperCase());
     }
 
     public void request(IBMRequestInfo info, Response response) throws IOException {
